@@ -2,10 +2,6 @@
 
 TRY_LOOP="20"
 
-: "${REDIS_HOST:="redis"}"
-: "${REDIS_PORT:="6379"}"
-: "${REDIS_PASSWORD:=""}"
-
 : "${POSTGRES_HOST:="postgres"}"
 : "${POSTGRES_PORT:="5432"}"
 : "${POSTGRES_USER:="airflow"}"
@@ -63,8 +59,7 @@ if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
 fi
 
 if [ "$AIRFLOW__CORE__EXECUTOR" = "CeleryExecutor" ]; then
-  AIRFLOW__CELERY__BROKER_URL="redis://$REDIS_PREFIX$REDIS_HOST:$REDIS_PORT/1"
-  wait_for_port "Redis" "$REDIS_HOST" "$REDIS_PORT"
+  AIRFLOW__CELERY__BROKER_URL="sqla+postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
 fi
 
 case "$1" in
