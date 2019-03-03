@@ -158,10 +158,6 @@ spec:
           value: postgres
         - name: POSTGRES_PORT
           value: "5432"
-        - name: REDIS_HOST
-          value: redis
-        - name: REDIS_PORT
-          value: "6379"
         - name: FERNET_KEY
           value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         readinessProbe:
@@ -221,10 +217,6 @@ spec:
           value: postgres
         - name: POSTGRES_PORT
           value: "5432"
-        - name: REDIS_HOST
-          value: redis
-        - name: REDIS_PORT
-          value: "6379"
         - name: FERNET_KEY
           value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         readinessProbe:
@@ -285,10 +277,6 @@ spec:
           value: postgres
         - name: POSTGRES_PORT
           value: "5432"
-        - name: REDIS_HOST
-          value: redis
-        - name: REDIS_PORT
-          value: "6379"
         - name: FERNET_KEY
           value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         readinessProbe:
