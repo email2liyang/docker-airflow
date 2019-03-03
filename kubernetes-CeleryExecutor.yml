@@ -162,6 +162,8 @@ spec:
           value: redis
         - name: REDIS_PORT
           value: "6379"
+        - name: FERNET_KEY
+          value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         readinessProbe:
           httpGet:
             path: /admin/
@@ -179,6 +181,70 @@ spec:
           containerPort: 8080
         command: ["/entrypoint.sh"]
         args: ["webserver"]
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-celery-scheduler
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-celery-scheduler
+  template:
+    metadata:
+      labels:
+        name: airflow-celery-scheduler
+        app: airflow-celery-scheduler
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        env:
+        - name: PG_HOST
+          value: postgres
+        - name: PG_PORT
+          value: "5432"
+        command: [ "/bin/sh", "-c", "until nc -zv $PG_HOST $PG_PORT -w1; do echo 'waiting for db'; sleep 1; done" ]
+      containers:
+      - name: airflow-celery-scheduler
+        image: docker.io/email2liyang/docker-airflow:1.10.2
+        imagePullPolicy: Always
+        env:
+        - name: LOAD_EX
+          value: "n"
+        - name: EXECUTOR
+          value: Celery
+        - name: POSTGRES_HOST
+          value: postgres
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: FERNET_KEY
+          value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep scheduler | grep -v "grep"
+          initialDelaySeconds: 8
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep scheduler | grep -v "grep"
+          initialDelaySeconds: 8
+          timeoutSeconds: 10
+        command: ["/entrypoint.sh"]
+        args: ["scheduler"]
 ---
 
 apiVersion: v1
